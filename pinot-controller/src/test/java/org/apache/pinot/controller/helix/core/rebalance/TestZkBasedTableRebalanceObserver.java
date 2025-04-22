@@ -97,9 +97,9 @@ public class TestZkBasedTableRebalanceObserver {
     Long deletionProgress = controllerMetrics.getGaugeValue(
         ControllerGauge.TABLE_REBALANCE_JOB_DELETION_PROGRESS_PERCENT.getGaugeName() + ".dummy.testZkObserverTracking");
     assertEquals(additionProgress, (long) observer.getTableRebalanceProgressStats()
-        .getRebalanceProgressStatsOverall()._percentageRemainingSegmentsToBeAdded);
+        .getRebalanceProgressStatsOverall()._percentageSegmentAdditionProgress);
     assertEquals(deletionProgress, (long) observer.getTableRebalanceProgressStats()
-        .getRebalanceProgressStatsOverall()._percentageRemainingSegmentsToBeDeleted);
+        .getRebalanceProgressStatsOverall()._percentageSegmentDeletionProgress);
   }
 
   @Test
@@ -180,8 +180,8 @@ public class TestZkBasedTableRebalanceObserver {
       assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
       assertEquals(stats._totalRemainingSegmentsToConverge, 0);
       assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-      assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-      assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+      assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+      assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
       assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, 0.0);
       assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
       assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -202,8 +202,8 @@ public class TestZkBasedTableRebalanceObserver {
       assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
       assertEquals(stats._totalRemainingSegmentsToConverge, 0);
       assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-      assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-      assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+      assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+      assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
       assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, 0.0);
       assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
       assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -221,8 +221,8 @@ public class TestZkBasedTableRebalanceObserver {
       assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
       assertEquals(stats._totalRemainingSegmentsToConverge, 0);
       assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-      assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-      assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+      assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+      assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
       assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, 0.0);
       assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
       assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -243,8 +243,8 @@ public class TestZkBasedTableRebalanceObserver {
       assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
       assertEquals(stats._totalRemainingSegmentsToConverge, 0);
       assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-      assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-      assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+      assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+      assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
       assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
       assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
       assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -265,8 +265,8 @@ public class TestZkBasedTableRebalanceObserver {
       assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
       assertEquals(stats._totalRemainingSegmentsToConverge, 0);
       assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-      assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-      assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+      assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+      assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
       assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
       assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
       assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -289,8 +289,8 @@ public class TestZkBasedTableRebalanceObserver {
         assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
         assertEquals(stats._totalRemainingSegmentsToConverge, 1);
         assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-        assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-        assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+        assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+        assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
         assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
         assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
         assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -310,8 +310,8 @@ public class TestZkBasedTableRebalanceObserver {
       assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
       assertEquals(stats._totalRemainingSegmentsToConverge, 0);
       assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-      assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-      assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+      assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+      assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
       assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
       assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
       assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -350,8 +350,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -374,8 +374,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, 0.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, 0);
@@ -390,8 +390,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -410,8 +410,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -433,8 +433,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -457,8 +457,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 50.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 50.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -472,8 +472,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 87.5);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 12.5);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -495,8 +495,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 2);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -510,8 +510,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 2);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 75.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 25.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -540,8 +540,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -555,8 +555,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 75.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 25.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -574,8 +574,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 75.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 25.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -600,8 +600,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -630,8 +630,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 25.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 75.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -645,8 +645,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 37.5);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 62.5);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -672,8 +672,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -687,8 +687,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 25.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 75.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -706,8 +706,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 25.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 75.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -732,8 +732,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -762,8 +762,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 50.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 50.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 50.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 50.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -777,8 +777,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 12.5);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 50.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 87.5);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 50.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -806,8 +806,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 00.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -821,8 +821,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -862,8 +862,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -886,8 +886,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, 0.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, 0);
@@ -902,8 +902,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -922,8 +922,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -945,8 +945,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -976,8 +976,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 50.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 50.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -991,8 +991,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 87.5);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 12.5);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1013,8 +1013,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 75.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 25.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1040,8 +1040,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1066,8 +1066,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 125.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1081,8 +1081,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 87.5);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 12.5);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1111,8 +1111,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 25.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 75.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1126,8 +1126,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 37.5);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 62.5);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1153,8 +1153,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1168,8 +1168,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 25.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 75.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(overallStats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1187,8 +1187,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 25.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 75.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1213,8 +1213,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 100.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 100.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 0.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 0.0);
     assertEquals(stats._estimatedTimeToCompleteAddsInSeconds, -1.0);
     assertEquals(stats._estimatedTimeToCompleteDeletesInSeconds, -1.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1243,8 +1243,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 50.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 50.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 50.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 50.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1258,8 +1258,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 12.5);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 50.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 87.5);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 50.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1287,8 +1287,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(stats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(stats._totalRemainingSegmentsToConverge, 0);
     assertEquals(stats._totalUniqueNewUntrackedSegmentsDuringRebalance, 0);
-    assertEquals(stats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(stats._percentageRemainingSegmentsToBeDeleted, 00.0);
+    assertEquals(stats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(stats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(stats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(stats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(stats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);
@@ -1302,8 +1302,8 @@ public class TestZkBasedTableRebalanceObserver {
     assertEquals(overallStats._totalCarryOverSegmentsToBeDeleted, 0);
     assertEquals(overallStats._totalRemainingSegmentsToConverge, 0);
     assertEquals(overallStats._totalUniqueNewUntrackedSegmentsDuringRebalance, 1);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeAdded, 0.0);
-    assertEquals(overallStats._percentageRemainingSegmentsToBeDeleted, 0.0);
+    assertEquals(overallStats._percentageSegmentAdditionProgress, 100.0);
+    assertEquals(overallStats._percentageSegmentDeletionProgress, 100.0);
     assertTrue(overallStats._estimatedTimeToCompleteAddsInSeconds >= 0.0);
     assertTrue(overallStats._estimatedTimeToCompleteDeletesInSeconds >= 0.0);
     assertEquals(overallStats._averageSegmentSizeInBytes, estimatedAverageSegmentSize);

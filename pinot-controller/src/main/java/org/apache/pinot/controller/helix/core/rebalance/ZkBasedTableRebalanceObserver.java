@@ -246,11 +246,11 @@ public class ZkBasedTableRebalanceObserver implements TableRebalanceObserver {
     // Using the original job ID to group rebalance retries together with the same label
     _controllerMetrics.setValueOfTableGauge(_tableNameWithType + "." + _tableRebalanceContext.getOriginalJobId(),
         ControllerGauge.TABLE_REBALANCE_JOB_ADDITION_PROGRESS_PERCENT,
-        (long) overallProgress._percentageRemainingSegmentsToBeAdded);
+        (long) overallProgress._percentageSegmentAdditionProgress);
 
     _controllerMetrics.setValueOfTableGauge(_tableNameWithType + "." + _tableRebalanceContext.getOriginalJobId(),
         ControllerGauge.TABLE_REBALANCE_JOB_DELETION_PROGRESS_PERCENT,
-        (long) overallProgress._percentageRemainingSegmentsToBeDeleted);
+        (long) overallProgress._percentageSegmentDeletionProgress);
   }
 
   @VisibleForTesting
@@ -516,8 +516,8 @@ public class ZkBasedTableRebalanceObserver implements TableRebalanceObserver {
         progressStats._totalCarryOverSegmentsToBeDeleted = 0;
         progressStats._totalRemainingSegmentsToConverge = segmentsUnchangedYetNotConverged;
         progressStats._totalUniqueNewUntrackedSegmentsDuringRebalance = totalNewSegmentsNotMonitored;
-        progressStats._percentageRemainingSegmentsToBeAdded = totalSegmentsToBeAdded == 0 ? 0.0 : 100.0;
-        progressStats._percentageRemainingSegmentsToBeDeleted = totalSegmentsToBeDeleted == 0 ? 0.0 : 100.0;
+        progressStats._percentageSegmentAdditionProgress = totalSegmentsToBeAdded == 0 ? 100.0 : 0.0;
+        progressStats._percentageSegmentDeletionProgress = totalSegmentsToBeDeleted == 0 ? 100.0 : 0.0;
         progressStats._estimatedTimeToCompleteAddsInSeconds = totalSegmentsToBeAdded == 0 ? 0.0 : -1.0;
         progressStats._estimatedTimeToCompleteDeletesInSeconds = totalSegmentsToBeDeleted == 0 ? 0.0 : -1.0;
         progressStats._averageSegmentSizeInBytes = rebalanceContext.getEstimatedAverageSegmentSizeInBytes();
@@ -542,9 +542,9 @@ public class ZkBasedTableRebalanceObserver implements TableRebalanceObserver {
         // (the segmentsToMonitor is passed in as null), copy over the existing stats
         progressStats._totalUniqueNewUntrackedSegmentsDuringRebalance =
             existingProgressStats._totalUniqueNewUntrackedSegmentsDuringRebalance;
-        progressStats._percentageRemainingSegmentsToBeAdded = TableRebalanceProgressStats.calculatePercentageChange(
+        progressStats._percentageSegmentAdditionProgress = TableRebalanceProgressStats.calculatePercentageChange(
             progressStats._totalSegmentsToBeAdded, totalSegmentsToBeAdded);
-        progressStats._percentageRemainingSegmentsToBeDeleted = TableRebalanceProgressStats.calculatePercentageChange(
+        progressStats._percentageSegmentDeletionProgress = TableRebalanceProgressStats.calculatePercentageChange(
             progressStats._totalSegmentsToBeDeleted, totalSegmentsToBeDeleted);
         // Calculate elapsed time based on start of global rebalance time
         startTimeMs = rebalanceProgressStats.getStartTimeMs();
@@ -595,11 +595,12 @@ public class ZkBasedTableRebalanceObserver implements TableRebalanceObserver {
         progressStats._totalRemainingSegmentsToConverge = segmentsUnchangedYetNotConverged;
         progressStats._totalUniqueNewUntrackedSegmentsDuringRebalance =
             existingProgressStats._totalUniqueNewUntrackedSegmentsDuringRebalance + totalNewSegmentsNotMonitored;
-        // This percentage can be > 100% for EV-IS convergence since there could be some segments carried over from the
-        // last step to this one that are yet to converge. This can especially occur if bestEfforts=true
-        progressStats._percentageRemainingSegmentsToBeAdded = TableRebalanceProgressStats.calculatePercentageChange(
+        // If some segments were carried over from the last step to this one that are yet to converge,
+        // totalSegmentsToBeAdded will be larger than progressStats._totalSegmentsToBeAdded. In this case the
+        // progress is marked as 0.0. This can especially occur if bestEfforts=true
+        progressStats._percentageSegmentAdditionProgress = TableRebalanceProgressStats.calculatePercentageChange(
             progressStats._totalSegmentsToBeAdded, totalSegmentsToBeAdded);
-        progressStats._percentageRemainingSegmentsToBeDeleted = TableRebalanceProgressStats.calculatePercentageChange(
+        progressStats._percentageSegmentDeletionProgress = TableRebalanceProgressStats.calculatePercentageChange(
             progressStats._totalSegmentsToBeDeleted, totalSegmentsToBeDeleted);
         // Calculate elapsed time based on start of the rebalance step start time
         startTimeMs = existingProgressStats._startTimeMs;

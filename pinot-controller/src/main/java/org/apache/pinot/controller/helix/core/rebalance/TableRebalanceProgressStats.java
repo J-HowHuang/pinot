@@ -26,9 +26,11 @@ import java.util.Objects;
 /**
  * These are rebalance progress stats to track how the rebalance is progressing over time
  */
-@JsonPropertyOrder({"status", "startTimeMs", "timeToFinishInSeconds", "completionStatusMsg",
+@JsonPropertyOrder({
+    "status", "startTimeMs", "timeToFinishInSeconds", "completionStatusMsg",
     "rebalanceProgressStatsOverall", "rebalanceProgressStatsCurrentStep", "initialToTargetStateConvergence",
-    "currentToTargetConvergence", "externalViewToIdealStateConvergence"})
+    "currentToTargetConvergence", "externalViewToIdealStateConvergence"
+})
 public class TableRebalanceProgressStats {
 
   // Done/In_progress/Failed
@@ -202,11 +204,11 @@ public class TableRebalanceProgressStats {
 
     // Calculate the percentage segments that still need to complete processing. This is calculated based on the
     // total segments remaining and the carry-over segments from the last rebalance next assignment IS update
-    currentOverallStats._percentageRemainingSegmentsToBeAdded =
+    currentOverallStats._percentageSegmentAdditionProgress =
         calculatePercentageChange(currentOverallStats._totalSegmentsToBeAdded,
             currentOverallStats._totalRemainingSegmentsToBeAdded
                 + currentOverallStats._totalCarryOverSegmentsToBeAdded);
-    currentOverallStats._percentageRemainingSegmentsToBeDeleted =
+    currentOverallStats._percentageSegmentDeletionProgress =
         calculatePercentageChange(currentOverallStats._totalSegmentsToBeDeleted,
             currentOverallStats._totalRemainingSegmentsToBeDeleted
                 + currentOverallStats._totalCarryOverSegmentsToBeDeleted);
@@ -234,8 +236,13 @@ public class TableRebalanceProgressStats {
   }
 
   public static double calculatePercentageChange(int totalSegmentsToChange, int remainingSegmentsToChange) {
-    return totalSegmentsToChange == 0
-        ? 0.0 : (double) remainingSegmentsToChange / (double) totalSegmentsToChange * 100.0;
+    if (totalSegmentsToChange == 0) {
+      return 100.0;
+    }
+    // remainingSegmentsToChange could be more than totalSegmentsToChange if there are carried over segments. Mark
+    // the progress as 0% in this case
+    return remainingSegmentsToChange > totalSegmentsToChange
+        ? 0.0 : (1.0 - (double) remainingSegmentsToChange / (double) totalSegmentsToChange) * 100.0;
   }
 
   public static double calculateEstimatedTimeToCompleteChange(long startTime, int totalSegmentsToChange,
@@ -263,6 +270,7 @@ public class TableRebalanceProgressStats {
   }
 
   // TODO: Clean this up once new stats are verified
+
   /**
    * These are rebalance stats as to how the current state is, when compared to the target state.
    * Eg: If the current has 4 segments whose replicas (16) don't match the target state, _segmentsToRebalance
@@ -305,10 +313,10 @@ public class TableRebalanceProgressStats {
     @JsonProperty("totalUniqueNewUntrackedSegmentsDuringRebalance")
     public int _totalUniqueNewUntrackedSegmentsDuringRebalance;
     // Derived stats
-    @JsonProperty("percentageRemainingSegmentsToBeAdded")
-    public double _percentageRemainingSegmentsToBeAdded;
-    @JsonProperty("percentageRemainingSegmentsToBeDeleted")
-    public double _percentageRemainingSegmentsToBeDeleted;
+    @JsonProperty("percentageSegmentAdditionProgress")
+    public double _percentageSegmentAdditionProgress;
+    @JsonProperty("percentageSegmentDeletionProgress")
+    public double _percentageSegmentDeletionProgress;
     @JsonProperty("estimatedTimeToCompleteAddsInSeconds")
     public double _estimatedTimeToCompleteAddsInSeconds;
     @JsonProperty("estimatedTimeToCompleteDeletesInSeconds")
@@ -330,8 +338,8 @@ public class TableRebalanceProgressStats {
       _totalCarryOverSegmentsToBeAdded = 0;
       _totalCarryOverSegmentsToBeDeleted = 0;
       _totalUniqueNewUntrackedSegmentsDuringRebalance = 0;
-      _percentageRemainingSegmentsToBeAdded = 0.0;
-      _percentageRemainingSegmentsToBeDeleted = 0.0;
+      _percentageSegmentAdditionProgress = 100.0;
+      _percentageSegmentDeletionProgress = 100.0;
       _estimatedTimeToCompleteAddsInSeconds = 0;
       _estimatedTimeToCompleteDeletesInSeconds = 0;
       _averageSegmentSizeInBytes = 0;
@@ -373,9 +381,9 @@ public class TableRebalanceProgressStats {
           && _totalCarryOverSegmentsToBeAdded == that._totalCarryOverSegmentsToBeAdded
           && _totalCarryOverSegmentsToBeDeleted == that._totalCarryOverSegmentsToBeDeleted
           && _totalUniqueNewUntrackedSegmentsDuringRebalance == that._totalUniqueNewUntrackedSegmentsDuringRebalance
-          && Double.compare(_percentageRemainingSegmentsToBeAdded, that._percentageRemainingSegmentsToBeAdded)
+          && Double.compare(_percentageSegmentAdditionProgress, that._percentageSegmentAdditionProgress)
           == 0
-          && Double.compare(_percentageRemainingSegmentsToBeDeleted, that._percentageRemainingSegmentsToBeDeleted)
+          && Double.compare(_percentageSegmentDeletionProgress, that._percentageSegmentDeletionProgress)
           == 0 && _averageSegmentSizeInBytes == that._averageSegmentSizeInBytes
           && _totalEstimatedDataToBeMovedInBytes == that._totalEstimatedDataToBeMovedInBytes
           && _startTimeMs == that._startTimeMs;
@@ -386,7 +394,7 @@ public class TableRebalanceProgressStats {
       return Objects.hash(_totalSegmentsToBeAdded, _totalSegmentsToBeDeleted, _totalRemainingSegmentsToBeAdded,
           _totalRemainingSegmentsToBeDeleted, _totalRemainingSegmentsToConverge, _totalCarryOverSegmentsToBeAdded,
           _totalCarryOverSegmentsToBeDeleted, _totalUniqueNewUntrackedSegmentsDuringRebalance,
-          _percentageRemainingSegmentsToBeAdded, _percentageRemainingSegmentsToBeDeleted, _averageSegmentSizeInBytes,
+          _percentageSegmentAdditionProgress, _percentageSegmentDeletionProgress, _averageSegmentSizeInBytes,
           _totalEstimatedDataToBeMovedInBytes, _startTimeMs);
     }
   }
