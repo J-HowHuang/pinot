@@ -6,7 +6,8 @@
     "timeColumnName": "DaysSinceEpoch",
     "retentionTimeUnit": "DAYS",
     "retentionTimeValue": "5",
-    "replication": "1"
+    "replication": "2",
+    "peerSegmentDownloadScheme": "http"
   },
   "tableIndexConfig": {},
   "routing": {

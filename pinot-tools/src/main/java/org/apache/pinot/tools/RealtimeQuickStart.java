@@ -50,6 +50,8 @@ public class RealtimeQuickStart extends QuickStartBase {
   protected Map<String, Object> getConfigOverrides() {
     Map<String, Object> configOverrides = new HashMap<>();
     configOverrides.put(CommonConstants.Server.CONFIG_OF_ENABLE_THREAD_CPU_TIME_MEASUREMENT, true);
+    configOverrides.put(CommonConstants.Server.CONFIG_OF_SEGMENT_STORE_URI, "file:///this/dir/does/not/exist");
+    configOverrides.put(CommonConstants.Server.PREFIX_OF_CONFIG_OF_PINOT_FS_FACTORY + "class.file", "org.apache.pinot.spi.filesystem.LocalPinotFS");
     return configOverrides;
   }
 
@@ -99,7 +101,7 @@ public class RealtimeQuickStart extends QuickStartBase {
     Preconditions.checkState(quickstartRunnerDir.mkdirs());
     List<QuickstartTableRequest> quickstartTableRequests = bootstrapStreamTableDirectories(quickstartTmpDir);
     final QuickstartRunner runner =
-        new QuickstartRunner(quickstartTableRequests, 1, 1, 1, 1, quickstartRunnerDir, getConfigOverrides());
+        new QuickstartRunner(quickstartTableRequests, 1, 1, 4, 1, quickstartRunnerDir, getConfigOverrides());
 
     startKafka();
     startAllDataStreams(_kafkaStarter, quickstartTmpDir);
