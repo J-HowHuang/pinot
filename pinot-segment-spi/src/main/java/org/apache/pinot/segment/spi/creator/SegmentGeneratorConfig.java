@@ -210,7 +210,10 @@ public class SegmentGeneratorConfig implements Serializable {
       boolean customConfigEnabled =
           customConfigs != null && Boolean.parseBoolean(customConfigs.get(GENERATE_INV_BEFORE_PUSH_DEPREC_PROP));
       boolean indexingConfigEnable = indexingConfig.isCreateInvertedIndexDuringSegmentGeneration();
-      if (!customConfigEnabled && !indexingConfigEnable) {
+      boolean tierEnabled = CollectionUtils.isNotEmpty(tableConfig.getTierConfigsList());
+      // It makes less sense to skip inverted index generation. Though it saves space in deep store, servers would still
+      // upload inverted indexes to s3 remote tier after preprocessing them
+      if (!customConfigEnabled && !indexingConfigEnable && !tierEnabled) {
         //noinspection rawtypes
         IndexType inverted = StandardIndexes.inverted();
         for (String column : invertedIndexColumns) {
