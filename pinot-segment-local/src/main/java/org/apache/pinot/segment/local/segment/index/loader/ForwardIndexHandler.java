@@ -116,6 +116,46 @@ public class ForwardIndexHandler extends BaseIndexHandler {
     super(segmentDirectory, fieldIndexConfigs, tableConfig, schema);
   }
 
+  // Cached result of computeOperations to avoid recomputing for each column in getIndexChange
+  @Nullable
+  private Map<String, List<Operation>> _cachedOperations;
+
+  @Nullable
+  @Override
+  public IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader)
+      throws Exception {
+    if (_cachedOperations == null) {
+      _cachedOperations = computeOperations(segmentReader);
+    }
+    List<Operation> operations = _cachedOperations.get(column);
+    if (operations == null) {
+      return null;
+    }
+    IndexAction action = null;
+    for (Operation op : operations) {
+      switch (op) {
+        case DISABLE_FORWARD_INDEX:
+          if (action == null) {
+            action = IndexAction.REMOVE;
+          }
+          break;
+        case ENABLE_FORWARD_INDEX:
+          if (action == null || action == IndexAction.REMOVE) {
+            action = IndexAction.ADD;
+          }
+          break;
+        case DISABLE_DICTIONARY:
+        case ENABLE_DICTIONARY:
+        case CHANGE_INDEX_COMPRESSION_TYPE:
+          action = IndexAction.REBUILD;
+          break;
+        default:
+          break;
+      }
+    }
+    return action;
+  }
+
   @Override
   public boolean needUpdateIndices(SegmentDirectory.Reader segmentReader)
       throws Exception {

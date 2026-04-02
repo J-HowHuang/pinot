@@ -27,6 +27,8 @@ import org.apache.pinot.segment.spi.V1Constants;
 public class MultiColumnTextIndexConstants {
 
   public static final String INDEX_DIR_NAME = "multi_col_text_idx";
+  /** Index type name used as the key in per-column index change maps (e.g., for dry-run reporting). */
+  public static final String INDEX_TYPE_NAME = "multi_column_text";
   public static final String INDEX_DIR_FILE_NAME =
       INDEX_DIR_NAME + V1Constants.Indexes.LUCENE_V912_TEXT_INDEX_FILE_EXTENSION;
   public static final String DOCID_MAPPING_FILE_NAME =

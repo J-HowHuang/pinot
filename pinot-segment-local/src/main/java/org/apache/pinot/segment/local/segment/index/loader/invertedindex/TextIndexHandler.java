@@ -23,11 +23,11 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.apache.pinot.segment.local.segment.index.dictionary.DictionaryIndexType;
 import org.apache.pinot.segment.local.segment.index.loader.BaseIndexHandler;
 import org.apache.pinot.segment.local.segment.index.loader.LoaderUtils;
-import org.apache.pinot.segment.local.segment.index.loader.SegmentPreProcessor;
 import org.apache.pinot.segment.local.segment.store.TextIndexUtils;
 import org.apache.pinot.segment.spi.ColumnMetadata;
 import org.apache.pinot.segment.spi.V1Constants;
@@ -35,6 +35,7 @@ import org.apache.pinot.segment.spi.creator.IndexCreationContext;
 import org.apache.pinot.segment.spi.creator.SegmentVersion;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigs;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigsUtil;
+import org.apache.pinot.segment.spi.index.IndexHandler.IndexAction;
 import org.apache.pinot.segment.spi.index.IndexReaderFactory;
 import org.apache.pinot.segment.spi.index.StandardIndexes;
 import org.apache.pinot.segment.spi.index.TextIndexConfig;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Helper class for text indexes used by {@link SegmentPreProcessor}.
+ * Helper class for text indexes.
  * to create text index for column during segment load time. Currently, text index is always
  * created (if enabled on a column) during segment generation
  *
@@ -80,6 +81,41 @@ public class TextIndexHandler extends BaseIndexHandler {
       TableConfig tableConfig, Schema schema) {
     super(segmentDirectory, fieldIndexConfigs, tableConfig, schema);
     _columnsToAddIdx = FieldIndexConfigsUtil.columnsWithIndexEnabled(StandardIndexes.text(), _fieldIndexConfigs);
+  }
+
+  @Nullable
+  @Override
+  public IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader) {
+    boolean existing = segmentReader.hasIndexFor(column, StandardIndexes.text());
+    boolean desired = _columnsToAddIdx.contains(column);
+    if (existing && !desired) {
+      return IndexAction.REMOVE;
+    }
+    if (existing && desired) {
+      // Check if the existing file is a legacy native text index that needs to be replaced
+      File indexDir = _segmentDirectory.getSegmentMetadata().getIndexDir();
+      File segmentDirectory =
+          SegmentDirectoryPaths.segmentDirectoryFor(indexDir, _segmentDirectory.getSegmentMetadata().getVersion());
+      if (hasLegacyNativeTextIndex(indexDir, segmentDirectory, column)) {
+        return IndexAction.REBUILD;
+      }
+      // Check if text index configuration changed
+      ColumnMetadata columnMetadata = _segmentDirectory.getSegmentMetadata().getColumnMetadataFor(column);
+      try {
+        if (columnMetadata != null && hasTextIndexConfigurationChanged(column, segmentReader)) {
+          return IndexAction.REBUILD;
+        }
+      } catch (Exception e) {
+        // Cannot determine config change — conservatively assume rebuild
+        return IndexAction.REBUILD;
+      }
+      return null;
+    }
+    if (!existing && desired) {
+      ColumnMetadata columnMetadata = _segmentDirectory.getSegmentMetadata().getColumnMetadataFor(column);
+      return shouldCreateTextIndex(columnMetadata) ? IndexAction.ADD : null;
+    }
+    return null;
   }
 
   @Override

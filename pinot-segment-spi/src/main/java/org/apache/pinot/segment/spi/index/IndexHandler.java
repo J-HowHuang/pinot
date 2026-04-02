@@ -18,6 +18,7 @@
  */
 package org.apache.pinot.segment.spi.index;
 
+import javax.annotation.Nullable;
 import org.apache.pinot.segment.spi.store.SegmentDirectory;
 
 
@@ -26,6 +27,18 @@ import org.apache.pinot.segment.spi.store.SegmentDirectory;
  * like adding, removing or converting the format.
  */
 public interface IndexHandler {
+  /**
+   * Describes what will happen to a single index type on a column during reload.
+   */
+  enum IndexAction {
+    /** Index does not exist and will be created. */
+    ADD,
+    /** Index exists and will be dropped. */
+    REMOVE,
+    /** Index exists and will be dropped then recreated (config or format change). */
+    REBUILD
+  }
+
   /**
    * Adds new indices and removes obsolete indices.
    */
@@ -38,6 +51,20 @@ public interface IndexHandler {
    */
   boolean needUpdateIndices(SegmentDirectory.Reader segmentReader)
       throws Exception;
+
+  /**
+   * Returns the {@link IndexAction} that would be applied to the given column during
+   * {@link #updateIndices}, or {@code null} if no change is needed for that column.
+   *
+   * <p>Used by downstream projects to preview the effect of a reload without performing it.
+   * The default implementation always returns {@code null}. Implementations should override
+   * this to provide accurate dry-run information.
+   */
+  @Nullable
+  default IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader)
+      throws Exception {
+    return null;
+  }
 
   /**
    * Performs any cleanup actions required after the indexes have been updated.

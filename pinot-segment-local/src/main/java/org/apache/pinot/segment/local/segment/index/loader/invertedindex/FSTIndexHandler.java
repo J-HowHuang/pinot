@@ -24,18 +24,19 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.apache.pinot.segment.local.segment.index.dictionary.DictionaryIndexType;
 import org.apache.pinot.segment.local.segment.index.fst.FstIndexUtils;
 import org.apache.pinot.segment.local.segment.index.loader.BaseIndexHandler;
 import org.apache.pinot.segment.local.segment.index.loader.LoaderUtils;
-import org.apache.pinot.segment.local.segment.index.loader.SegmentPreProcessor;
 import org.apache.pinot.segment.spi.ColumnMetadata;
 import org.apache.pinot.segment.spi.creator.IndexCreationContext;
 import org.apache.pinot.segment.spi.creator.SegmentVersion;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigs;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigsUtil;
 import org.apache.pinot.segment.spi.index.FstIndexConfig;
+import org.apache.pinot.segment.spi.index.IndexHandler.IndexAction;
 import org.apache.pinot.segment.spi.index.StandardIndexes;
 import org.apache.pinot.segment.spi.index.creator.FSTIndexCreator;
 import org.apache.pinot.segment.spi.index.reader.Dictionary;
@@ -51,7 +52,7 @@ import static org.apache.pinot.segment.spi.V1Constants.Indexes.LUCENE_V912_FST_I
 
 
 /**
- * Helper class for fst indexes used by {@link SegmentPreProcessor}.
+ * Helper class for fst indexes.
  * to create FST index for column during segment load time. Currently FST index is always
  * created (if enabled on a column) during segment generation
  *
@@ -77,6 +78,31 @@ public class FSTIndexHandler extends BaseIndexHandler {
       TableConfig tableConfig, Schema schema) {
     super(segmentDirectory, fieldIndexConfigs, tableConfig, schema);
     _columnsToAddIdx = FieldIndexConfigsUtil.columnsWithIndexEnabled(StandardIndexes.fst(), _fieldIndexConfigs);
+  }
+
+  @Nullable
+  @Override
+  public IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader) {
+    boolean existing = segmentReader.hasIndexFor(column, StandardIndexes.fst());
+    boolean desired = _columnsToAddIdx.contains(column);
+    if (existing && !desired) {
+      return IndexAction.REMOVE;
+    }
+    if (existing && desired) {
+      // Check if the existing file is a legacy native FST that needs to be replaced
+      try {
+        PinotDataBuffer fstBuffer = segmentReader.getIndexFor(column, StandardIndexes.fst());
+        return FstIndexUtils.isLegacyNativeFst(fstBuffer) ? IndexAction.REBUILD : null;
+      } catch (IOException e) {
+        // Cannot read existing index — conservatively assume rebuild is needed
+        return IndexAction.REBUILD;
+      }
+    }
+    if (!existing && desired) {
+      ColumnMetadata columnMetadata = _segmentDirectory.getSegmentMetadata().getColumnMetadataFor(column);
+      return shouldCreateFSTIndex(columnMetadata) ? IndexAction.ADD : null;
+    }
+    return null;
   }
 
   @Override

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.apache.pinot.segment.local.segment.index.dictionary.DictionaryIndexType;
 import org.apache.pinot.segment.local.segment.index.loader.BaseIndexHandler;
@@ -83,6 +84,21 @@ public class BloomFilterHandler extends BaseIndexHandler {
       }
     }
     return false;
+  }
+
+  @Nullable
+  @Override
+  public IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader) {
+    boolean existing = segmentReader.hasIndexFor(column, StandardIndexes.bloomFilter());
+    boolean desired = _bloomFilterConfigs.containsKey(column);
+    if (existing && !desired) {
+      return IndexAction.REMOVE;
+    }
+    if (!existing && desired) {
+      ColumnMetadata columnMetadata = _segmentDirectory.getSegmentMetadata().getColumnMetadataFor(column);
+      return shouldCreateBloomFilter(columnMetadata) ? IndexAction.ADD : null;
+    }
+    return null;
   }
 
   @Override

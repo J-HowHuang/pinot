@@ -23,16 +23,18 @@ import it.unimi.dsi.fastutil.booleans.BooleanList;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.pinot.segment.local.segment.creator.impl.text.MultiColumnLuceneTextIndexCreator;
 import org.apache.pinot.segment.local.segment.index.dictionary.DictionaryIndexType;
 import org.apache.pinot.segment.local.segment.index.loader.BaseIndexHandler;
 import org.apache.pinot.segment.local.segment.index.loader.IndexLoadingConfig;
-import org.apache.pinot.segment.local.segment.index.loader.SegmentPreProcessor;
 import org.apache.pinot.segment.local.utils.TableConfigUtils;
 import org.apache.pinot.segment.spi.ColumnMetadata;
+import org.apache.pinot.segment.spi.index.IndexHandler.IndexAction;
 import org.apache.pinot.segment.spi.index.IndexReaderConstraintException;
 import org.apache.pinot.segment.spi.index.IndexReaderFactory;
 import org.apache.pinot.segment.spi.index.StandardIndexes;
@@ -52,7 +54,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Helper class for text indexes used by {@link SegmentPreProcessor}.
+ * Helper class for text indexes.
  * to create text index for column during segment load time. Currently, text index is always
  * created (if enabled on a column) during segment generation
  *
@@ -86,6 +88,29 @@ public class MultiColumnTextIndexHandler extends BaseIndexHandler {
       MultiColumnTextIndexConfig textIndexConfig) {
     super(segmentDirectory, indexLoadingConfig);
     _textIndexConfig = textIndexConfig;
+  }
+
+  @Nullable
+  @Override
+  public IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader) {
+    MultiColumnTextMetadata oldConfig = _segmentDirectory.getSegmentMetadata().getMultiColumnTextMetadata();
+    if (!shouldModifyMultiColTextIndex(_textIndexConfig, oldConfig)) {
+      return null;
+    }
+    List<String> newColumns = _textIndexConfig.getColumns();
+    List<String> oldColumns = oldConfig != null ? oldConfig.getColumns() : Collections.emptyList();
+    boolean inNew = newColumns.contains(column);
+    boolean inOld = oldColumns.contains(column);
+    if (inNew && inOld) {
+      return IndexAction.REBUILD;
+    }
+    if (inNew) {
+      return IndexAction.ADD;
+    }
+    if (inOld) {
+      return IndexAction.REMOVE;
+    }
+    return null;
   }
 
   @Override

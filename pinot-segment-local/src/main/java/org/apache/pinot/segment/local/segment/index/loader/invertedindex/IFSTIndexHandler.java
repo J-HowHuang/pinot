@@ -27,13 +27,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.pinot.segment.local.segment.index.dictionary.DictionaryIndexType;
 import org.apache.pinot.segment.local.segment.index.loader.BaseIndexHandler;
 import org.apache.pinot.segment.local.segment.index.loader.LoaderUtils;
-import org.apache.pinot.segment.local.segment.index.loader.SegmentPreProcessor;
 import org.apache.pinot.segment.spi.ColumnMetadata;
 import org.apache.pinot.segment.spi.creator.IndexCreationContext;
 import org.apache.pinot.segment.spi.creator.SegmentVersion;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigs;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigsUtil;
 import org.apache.pinot.segment.spi.index.FstIndexConfig;
+import org.apache.pinot.segment.spi.index.IndexHandler.IndexAction;
 import org.apache.pinot.segment.spi.index.StandardIndexes;
 import org.apache.pinot.segment.spi.index.creator.FSTIndexCreator;
 import org.apache.pinot.segment.spi.index.reader.Dictionary;
@@ -48,7 +48,7 @@ import static org.apache.pinot.segment.spi.V1Constants.Indexes.LUCENE_V912_IFST_
 
 
 /**
- * Helper class for IFST (case-insensitive FST) indexes used by {@link SegmentPreProcessor}.
+ * Helper class for IFST (case-insensitive FST) indexes.
  * to create IFST index for column during segment load time. Currently IFST index is always
  * created (if enabled on a column) during segment generation
  *
@@ -73,6 +73,21 @@ public class IFSTIndexHandler extends BaseIndexHandler {
       @Nullable TableConfig tableConfig, Schema schema) {
     super(segmentDirectory, fieldIndexConfigs, tableConfig, schema);
     _columnsToAddIdx = FieldIndexConfigsUtil.columnsWithIndexEnabled(StandardIndexes.ifst(), _fieldIndexConfigs);
+  }
+
+  @Nullable
+  @Override
+  public IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader) {
+    boolean existing = segmentReader.hasIndexFor(column, StandardIndexes.ifst());
+    boolean desired = _columnsToAddIdx.contains(column);
+    if (existing && !desired) {
+      return IndexAction.REMOVE;
+    }
+    if (!existing && desired) {
+      ColumnMetadata columnMetadata = _segmentDirectory.getSegmentMetadata().getColumnMetadataFor(column);
+      return shouldCreateIFSTIndex(columnMetadata) ? IndexAction.ADD : null;
+    }
+    return null;
   }
 
   @Override

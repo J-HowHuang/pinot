@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.apache.pinot.segment.local.segment.index.loader.BaseIndexHandler;
 import org.apache.pinot.segment.spi.ColumnMetadata;
@@ -30,6 +31,7 @@ import org.apache.pinot.segment.spi.V1Constants;
 import org.apache.pinot.segment.spi.creator.IndexCreationContext;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigs;
 import org.apache.pinot.segment.spi.index.FieldIndexConfigsUtil;
+import org.apache.pinot.segment.spi.index.IndexHandler.IndexAction;
 import org.apache.pinot.segment.spi.index.IndexReaderFactory;
 import org.apache.pinot.segment.spi.index.StandardIndexes;
 import org.apache.pinot.segment.spi.index.creator.VectorIndexConfig;
@@ -55,6 +57,21 @@ public class VectorIndexHandler extends BaseIndexHandler {
       TableConfig tableConfig, Schema schema) {
     super(segmentDirectory, fieldIndexConfigs, tableConfig, schema);
     _vectorConfigs = FieldIndexConfigsUtil.enableConfigByColumn(StandardIndexes.vector(), _fieldIndexConfigs);
+  }
+
+  @Nullable
+  @Override
+  public IndexAction getIndexChange(String column, SegmentDirectory.Reader segmentReader) {
+    boolean existing = segmentReader.hasIndexFor(column, StandardIndexes.vector());
+    boolean desired = _vectorConfigs.containsKey(column);
+    if (existing && !desired) {
+      return IndexAction.REMOVE;
+    }
+    if (!existing && desired) {
+      ColumnMetadata columnMetadata = _segmentDirectory.getSegmentMetadata().getColumnMetadataFor(column);
+      return shouldCreateVectorIndex(columnMetadata) ? IndexAction.ADD : null;
+    }
+    return null;
   }
 
   @Override
