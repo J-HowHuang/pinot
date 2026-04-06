@@ -276,6 +276,11 @@ public abstract class BaseTableDataManager implements TableDataManager {
   }
 
   @Override
+  public ExecutorService getSegmentReloadRefreshExecutor() {
+    return _segmentReloadRefreshExecutor;
+  }
+
+  @Override
   public synchronized void start() {
     _logger.info("Starting table data manager");
     doStart();

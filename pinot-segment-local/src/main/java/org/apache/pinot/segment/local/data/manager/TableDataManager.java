@@ -79,6 +79,11 @@ public interface TableDataManager {
   InstanceDataManagerConfig getInstanceDataManagerConfig();
 
   /**
+   * Returns the executor service used for segment reload and refresh operations.
+   */
+  ExecutorService getSegmentReloadRefreshExecutor();
+
+  /**
    * Starts the table data manager. Should be called only once after table data manager gets initialized but before
    * calling any other method.
    */
