@@ -200,6 +200,10 @@ public class ImmutableSegmentImpl implements ImmutableSegment {
     return ImmutableSegmentLoader.needPreprocess(_segmentDirectory, indexLoadingConfig);
   }
 
+  public SegmentDirectory getSegmentDirectory() {
+    return _segmentDirectory;
+  }
+
   @Override
   public <I extends IndexReader> I getIndex(String column, IndexType<?, I, ?> type) {
     ColumnIndexContainer container = _indexContainerMap.get(column);
