@@ -937,7 +937,7 @@ public abstract class BaseTableDataManager implements TableDataManager {
     }
   }
 
-  private void reloadSegments(List<SegmentDataManager> segmentDataManagers, IndexLoadingConfig indexLoadingConfig,
+  protected void reloadSegments(List<SegmentDataManager> segmentDataManagers, IndexLoadingConfig indexLoadingConfig,
       boolean forceDownload, String reloadJobId)
       throws Exception {
     List<String> failedSegments = new ArrayList<>();
@@ -967,7 +967,7 @@ public abstract class BaseTableDataManager implements TableDataManager {
     }
   }
 
-  private void reloadSegment(SegmentDataManager segmentDataManager, IndexLoadingConfig indexLoadingConfig,
+  protected void reloadSegment(SegmentDataManager segmentDataManager, IndexLoadingConfig indexLoadingConfig,
       boolean forceDownload)
       throws Exception {
     String segmentName = segmentDataManager.getSegmentName();
