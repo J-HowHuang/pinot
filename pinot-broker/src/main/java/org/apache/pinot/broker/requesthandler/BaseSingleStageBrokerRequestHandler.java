@@ -905,6 +905,9 @@ public abstract class BaseSingleStageBrokerRequestHandler extends BaseBrokerRequ
 
     brokerResponse.setRLSFiltersApplied(rlsFiltersApplied.get());
 
+    // Record per-server stats on the SSE BrokerResponse so downstream consumers can read it.
+    brokerResponse.setServerStats(serverStats.getServerStats());
+
     // Log query and stats
     _queryLogger.logQueryCompleted(
         new QueryLogger.QueryLogParams(requestContext, tableName, brokerResponse,
