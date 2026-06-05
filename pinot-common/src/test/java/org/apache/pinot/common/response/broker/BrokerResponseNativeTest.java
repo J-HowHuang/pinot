@@ -18,6 +18,8 @@
  */
 package org.apache.pinot.common.response.broker;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.apache.pinot.spi.exception.QueryErrorCode;
 import org.testng.Assert;
@@ -63,5 +65,31 @@ public class BrokerResponseNativeTest {
         QueryErrorCode.BROKER_RESOURCE_MISSING.getDefaultMessage());
     Assert.assertEquals(newBrokerResponse.getExceptions().get(1).getErrorCode(), 400);
     Assert.assertEquals(newBrokerResponse.getExceptions().get(1).getMessage(), errorMsgStr);
+  }
+
+  @Test
+  public void testServerStatsRoundTrip()
+      throws IOException {
+    BrokerResponseNative expected = new BrokerResponseNative();
+    String stats =
+        "Server=SubmitDelayMs,ResponseDelayMs,ResponseSize,DeserializationTimeMs,RequestSentDelayMs;"
+            + "pinot-server-0_O=0,1,7571,0,0;pinot-server-1_O=0,1,7574,0,0";
+    expected.setServerStats(stats);
+
+    BrokerResponseNative actual = BrokerResponseNative.fromJsonString(expected.toJsonString());
+    Assert.assertEquals(actual.getServerStats(), stats);
+  }
+
+  @Test
+  public void testServerStatsAbsentWhenNull()
+      throws IOException {
+    BrokerResponseNative response = new BrokerResponseNative();
+    JsonNode tree = new ObjectMapper().readTree(response.toJsonString());
+    Assert.assertFalse(tree.has("serverStats"));
+  }
+
+  @Test
+  public void testServerStatsDefaultsToNull() {
+    Assert.assertNull(new BrokerResponseNative().getServerStats());
   }
 }
