@@ -952,7 +952,7 @@ public class DataSchema {
     public PinotDataType toPinotDataType() {
       switch (this) {
         case INT:
-          return PinotDataType.INTEGER;
+          return PinotDataType.INT;
         case LONG:
           return PinotDataType.LONG;
         case FLOAT:
